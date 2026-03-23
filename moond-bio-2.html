@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>moond</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink: #0d0d0f;
+      --paper: #f4f0ea;
+      --moon: #c8b89a;
+      --accent: #7a6652;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      overflow: hidden;
+    }
+
+    #wave-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .scene {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .orbit {
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border: 1px solid rgba(200,184,154,0.1);
+      border-radius: 50%;
+      animation: spin 28s linear infinite;
+    }
+    .orbit::before {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--moon);
+      border-radius: 50%;
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--moon);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .card {
+      position: relative;
+      text-align: center;
+      padding: 3rem 2.5rem;
+      max-width: 480px;
+      width: 90vw;
+      opacity: 0;
+      transform: translateY(18px);
+      animation: rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
+    }
+
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 14vw, 7.5rem);
+      font-weight: 300;
+      letter-spacing: 0.18em;
+      color: var(--paper);
+      line-height: 0.9;
+      text-transform: lowercase;
+      display: inline-block;
+    }
+
+    .name::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--moon);
+      margin: 1.4rem auto 0;
+      opacity: 0;
+      animation: fadein 1s ease 1.4s forwards;
+    }
+
+    @keyframes fadein {
+      to { opacity: 1; }
+    }
+
+    .tagline {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(0.6rem, 2vw, 0.72rem);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--moon);
+      margin-top: 1.6rem;
+      opacity: 0;
+      animation: fadein 1s ease 1.7s forwards;
+    }
+
+    .quote-wrap {
+      margin-top: 3rem;
+      opacity: 0;
+      animation: fadein 1s ease 2.1s forwards;
+    }
+
+    .quote {
+      font-size: clamp(1rem, 3vw, 1.22rem);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(244, 240, 234, 0.55);
+      line-height: 1.7;
+      padding: 0 1.2rem;
+    }
+
+    .quote::before,
+    .quote::after {
+      font-style: normal;
+      font-family: Georgia, serif;
+      font-size: 2.5rem;
+      line-height: 0;
+      vertical-align: -0.4em;
+      color: var(--accent);
+      opacity: 0.6;
+    }
+    .quote::before { content: '\201C'; margin-right: 0.15em; }
+    .quote::after  { content: '\201D'; margin-left: 0.15em; }
+
+    .quote-attr {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 1rem;
+      opacity: 0.7;
+    }
+
+    .dot {
+      position: fixed;
+      border-radius: 50%;
+      background: var(--moon);
+      opacity: 0;
+      animation: float-in 2s ease forwards;
+    }
+    .dot:nth-child(1) { width:3px; height:3px; top:18%; left:12%; animation-delay:2.5s; }
+    .dot:nth-child(2) { width:2px; height:2px; top:72%; left:82%; animation-delay:2.8s; }
+    .dot:nth-child(3) { width:4px; height:4px; top:85%; left:20%; animation-delay:3.1s; }
+    .dot:nth-child(4) { width:2px; height:2px; top:25%; left:78%; animation-delay:3.4s; }
+
+    @keyframes float-in {
+      0%   { opacity: 0; transform: scale(0); }
+      60%  { opacity: 0.6; }
+      100% { opacity: 0.3; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="wave-bg"></canvas>
+
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+
+  <div class="scene">
+    <div class="orbit"></div>
+    <div class="card">
+      <div class="name">moond</div>
+      <p class="tagline">welcome to my world</p>
+      <div class="quote-wrap">
+        <p class="quote">stay hungry, stay foolish</p>
+        <p class="quote-attr">— Steve Jobs</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('wave-bg');
+    const ctx = canvas.getContext('2d');
+    const AGE = 24;
+    const PERIOD = 120;
+    const AMPLITUDE = 80;
+    let starPulse = 0;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function draw() {
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const originY = H * 0.72;
+      const xScale = W / 150;
+      const ageX = AGE * xScale;
+      const ageDecay = Math.exp(-AGE / 200);
+      const ageY = originY - AMPLITUDE * ageDecay * Math.sin((2 * Math.PI * AGE) / PERIOD);
+
+      // Wave line
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(200, 184, 154, 0.18)';
+      ctx.lineWidth = 1.5;
+      for (let px = 0; px <= W; px++) {
+        const xVal = px / xScale;
+        const decay = Math.exp(-xVal / 200);
+        const y = originY - AMPLITUDE * decay * Math.sin((2 * Math.PI * xVal) / PERIOD);
+        px === 0 ? ctx.moveTo(px, y) : ctx.lineTo(px, y);
+      }
+      ctx.stroke();
+
+      // Star glow layers
+      const pulse = Math.sin(starPulse) * 0.5 + 0.5;
+      const r1 = 3 + pulse * 2;
+      const r3 = 22 + pulse * 14;
+
+      const grad = ctx.createRadialGradient(ageX, ageY, 0, ageX, ageY, r3);
+      grad.addColorStop(0,    'rgba(255, 245, 200, 1)');
+      grad.addColorStop(0.15, 'rgba(220, 190, 130, 0.8)');
+      grad.addColorStop(0.45, `rgba(200, 165, 90, ${0.28 + pulse * 0.12})`);
+      grad.addColorStop(1,    'rgba(200, 155, 80, 0)');
+
+      ctx.beginPath();
+      ctx.arc(ageX, ageY, r3, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Core dot
+      ctx.beginPath();
+      ctx.arc(ageX, ageY, r1, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 252, 230, ${0.92 + pulse * 0.08})`;
+      ctx.fill();
+
+      // Star rays
+      const rayLen = 8 + pulse * 6;
+      ctx.save();
+      ctx.translate(ageX, ageY);
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2;
+        const len = i % 2 === 0 ? rayLen : rayLen * 0.55;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(angle) * (r1 + 1), Math.sin(angle) * (r1 + 1));
+        ctx.lineTo(Math.cos(angle) * (r1 + len), Math.sin(angle) * (r1 + len));
+        ctx.strokeStyle = `rgba(255, 228, 150, ${0.5 + pulse * 0.35})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      starPulse += 0.04;
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+  </script>
+</body>
+</html>

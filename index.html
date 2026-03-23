@@ -162,8 +162,12 @@
     }));
 
     function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.scale(dpr, dpr);
     }
 
     function getWaveY(xVal, originY) {
@@ -172,17 +176,24 @@
     }
 
     function draw() {
-      const W = canvas.width;
-      const H = canvas.height;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
       ctx.clearRect(0, 0, W, H);
-
-      const originY = H * 0.72;
-      const xScale = W / 150;
+  
+      const stars = Array.from({ length: 180 }, () => ({
+        x: Math.random(),
+        y: Math.random(),
+        r: Math.random() * 1.2 + 0.2,
+        o: Math.random() * 0.5 + 0.1,
+        bright: Math.random() > 0.85
+      }));
 
       stars.forEach(s => {
         ctx.beginPath();
         ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(220, 220, 230, ${s.o})`;
+        ctx.fillStyle = s.bright
+          ? `rgba(255, 248, 220, ${s.o + 0.3})`
+          : `rgba(220, 220, 235, ${s.o})`;
         ctx.fill();
       });
 
